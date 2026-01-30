@@ -91,7 +91,8 @@
             flex-direction: column;
             padding: 20px;
             transition: transform 0.3s ease;
-            position: relative;
+            position: fixed; /* Fixed untuk mobile */
+            top: 0; left: 0; bottom: 0;
             z-index: 100;
             overflow-y: auto;
         }
@@ -118,8 +119,20 @@
         .user-mini { display: flex; align-items: center; gap: 10px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
         .avatar-small { width: 35px; height: 35px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
 
+        /* --- SIDEBAR OVERLAY (FIX MOBILE CLICK OUTSIDE) --- */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 90; /* Di bawah sidebar (100), di atas konten */
+            backdrop-filter: blur(2px);
+        }
+        .sidebar.active + .sidebar-overlay {
+            display: block; 
+        }
+
         /* --- MAIN CONTENT --- */
-        .main-content { flex:1; padding: 30px; overflow-y: auto; position: relative; display: flex; flex-direction: column; z-index: 50; }
+        .main-content { flex:1; padding: 30px; overflow-y: auto; position: relative; display: flex; flex-direction: column; z-index: 50; margin-left: var(--sidebar-width); transition: margin-left 0.3s; }
+        
         .top-bar-mobile { display: none; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .page-header { margin-bottom: 30px; }
         .page-header h1 { font-size: 1.8rem; color: var(--primary-color); font-weight: 700; }
@@ -216,7 +229,7 @@
         /* Table */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom:1px solid #eee; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f8f9fa; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; }
         
         /* Modals */
@@ -233,7 +246,7 @@
             animation: slideUp 0.3s ease; position: relative;
         }
         .modal-header-icon {
-            font-size:3rem; color: var(--accent-color); margin-bottom: 20px; display: block; text-align: center;
+            font-size: 3rem; color: var(--accent-color); margin-bottom: 20px; display: block; text-align: center;
         }
         .modal-header-icon.danger { color: #e74c3c; }
         .modal-header-icon.success { color: var(--secondary-color); }
@@ -249,7 +262,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             display: flex; align-items: center; gap: 15px;
             animation: slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
-            border-left:5px solid transparent;
+            border-left: 5px solid transparent;
             transform: translateX(100%); opacity: 0;
         }
         .toast.show { opacity: 1; transform: translateX(0); }
@@ -262,13 +275,19 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
 
-        .mobile-menu-btn { display: none; font-size:1.5rem; cursor: pointer; }
+        .mobile-menu-btn { display: none; font-size: 1.5rem; cursor: pointer; }
+
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; top: 0; bottom: 0; width: 80%; max-width: 300px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
-            .sidebar.active { left: 0; transform: translateX(0); }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            
+            /* Overlay aktif saat sidebar active */
+            .sidebar-overlay { display: none; }
+            .sidebar.active + .sidebar-overlay { display: block; }
+
             .mobile-menu-btn { display: block; }
             .top-bar-mobile { display: flex; }
-            .main-content { padding: 20px; }
+            .main-content { padding: 20px; margin-left: 0; }
             .home-banner { height: 200px; }
         }
     </style>
@@ -349,6 +368,9 @@
             </div>
         </aside>
 
+        <!-- SIDEBAR OVERLAY (FIX MOBILE) -->
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
         <!-- MAIN CONTENT AREA -->
         <main class="main-content">
             <div class="top-bar-mobile">
@@ -357,10 +379,10 @@
                 <div style="width: 24px;"></div>
             </div>
 
-            <!-- CONTENT: HOME (BARU) -->
+            <!-- CONTENT: HOME -->
             <div id="tab-home" class="tab-content">
                 <div class="home-banner">
-                    <img id="homeBannerImg" src="https://via.placeholder.com/800x400?text=Pondok+Pesantren+Daruttauhid" alt="Banner Pondok">
+                    <img id="homeBannerImg" src="https://via.placeholder.com/800x400?text=Pondok+Pesantren" alt="Banner Pondok">
                     <div class="home-overlay">
                         <h2>Selamat Datang</h2>
                         <p>Sistem Informasi Manajemen Pondok Pesantren Daruttauhid Al Alawi.</p>
@@ -377,7 +399,6 @@
                     <div class="form-group-dashboard">
                         <label>URL Gambar Banner</label>
                         <input type="text" id="inputBannerUrl" class="form-control-dashboard" placeholder="Contoh: https://i.imgur.com/abcd.jpg">
-                        <small style="color: #7f8c8d; font-size: 0.8rem;">Disimpan di Spreadsheet (Global).</small>
                     </div>
                     <button class="btn" onclick="saveBannerSettings()">
                         <i class="fas fa-save"></i> Simpan Perubahan
@@ -501,7 +522,7 @@
         </div>
     </div>
 
-    <!-- 2. MODAL MENU (ADD/EDIT) -->
+    <!-- 2. MODAL MENU -->
     <div id="menuModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeMenuModal()">&times;</span>
@@ -515,9 +536,8 @@
                 </div>
                 <div class="form-group-dashboard">
                     <label>URL / Link Tujuan</label>
-                    <input type="text" id="menuUrl" class="form-control-dashboard" placeholder="https://..." required>
+                    <input type="text" id="menuUrl" class="form-control-dashboard" placeholder="https://www.youtube.com/..." required>
                 </div>
-                <!-- FITUR BARU: SETTING TARGET -->
                 <div class="form-group-dashboard">
                     <label>Buka Di</label>
                     <select id="menuTarget" class="form-control-dashboard">
@@ -566,6 +586,7 @@
                 initDashboard();
             }
 
+            // Toggle Password
             const togglePass = document.getElementById('togglePassword');
             const passInput = document.getElementById('password');
             togglePass.addEventListener('click', function() {
@@ -575,10 +596,12 @@
                 this.classList.toggle('fa-eye-slash');
             });
 
+            // Events
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
             document.getElementById('menuForm').addEventListener('submit', handleMenuSubmit);
 
+            // Icon Grid
             const grid = document.getElementById('iconGrid');
             iconList.forEach(icon => {
                 const div = document.createElement('div');
@@ -598,7 +621,6 @@
             }
         }
 
-        // --- SISTEM KONFIRMASI ---
         function showConfirm(title, message, callback, isDanger = true) {
             document.getElementById('confirmTitle').innerText = title;
             document.getElementById('confirmMessage').innerText = message;
@@ -618,7 +640,6 @@
             closeConfirmModal();
         });
 
-        // --- AUTH & DASHBOARD ---
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.querySelector('#loginForm button');
@@ -684,10 +705,16 @@
             showConfirm("Keluar Akun", "Apakah Anda yakin ingin keluar?", () => {
                 localStorage.removeItem('ppda_user');
                 location.reload();
-            }, true);
+            });
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+        }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -695,7 +722,7 @@
             document.getElementById('tab-' + tabName).style.display = 'block';
             
             // FIX MOBILE: Tutup sidebar saat menu diklik
-            document.getElementById('sidebar').classList.remove('active');
+            closeSidebar();
 
             const allMenus = ['home', 'setting', 'users', 'santri', 'akademik'];
             if(allMenus.includes(tabName)) {
@@ -704,8 +731,9 @@
             }
         }
 
-        // --- FITUR HOME & BANNER (GLOBAL) ---
+        // --- FITUR HOME & BANNER ---
         async function loadBannerFromServer() {
+            // Selalu ambil dari server agar sinkron di semua device
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getBanner").then(r => r.text());
                 const json = JSON.parse(res);
@@ -730,12 +758,12 @@
                     const json = await res.json();
                     if(json.status === 'success') {
                         document.getElementById('homeBannerImg').src = url;
-                        showToast("Banner berhasil diperbarui", "success");
+                        showToast("Banner diperbarui (Global)", "success");
                     } else {
-                        showToast("Gagal menyimpan banner", "error");
+                        showToast("Gagal: " + json.message, "error");
                     }
                 } catch(err) {
-                    showToast("Terjadi kesalahan koneksi", "error");
+                    showToast("Gagal koneksi", "error");
                 }
             } else {
                 showToast("URL tidak boleh kosong", "error");
@@ -775,7 +803,7 @@
                             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                             li.classList.add('active');
                             // FIX MOBILE: Tutup sidebar
-                            document.getElementById('sidebar').classList.remove('active');
+                            closeSidebar();
                         };
                         container.appendChild(li);
 
@@ -862,13 +890,12 @@
 
             const id = document.getElementById('menuId').value;
             const action = id ? 'editMenu' : 'addMenu';
-            
             const dataPayload = {
                 id: id || undefined,
                 nama: document.getElementById('menuNama').value,
                 url: document.getElementById('menuUrl').value,
                 icon: document.getElementById('menuIcon').value,
-                target: document.getElementById('menuTarget').value // Simpan setting target
+                target: document.getElementById('menuTarget').value
             };
 
             try {
@@ -903,7 +930,6 @@
                         body: fd, 
                         redirect: 'follow'
                     });
-                    
                     const text = await res.text();
                     const json = JSON.parse(text);
 
@@ -927,6 +953,7 @@
             document.getElementById('modalTitle').innerText = 'Tambah User'; userModal.style.display = 'flex';
         }
         function closeUserModal() { userModal.style.display = 'none'; }
+
         function editUser(id, u, p, r) {
             document.getElementById('userId').value = id; document.getElementById('modalUsername').value = u;
             document.getElementById('modalPassword').value = p; document.getElementById('modalRole').value = r;
@@ -980,7 +1007,6 @@
             } catch(e) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Gagal memuat</td></tr>'; }
         }
 
-        // --- UTILS ---
         async function loadStatusPendaftaran() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran").then(r => r.text());
