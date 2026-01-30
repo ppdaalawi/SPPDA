@@ -291,7 +291,6 @@
     </div>
 
     <script>
-        // URL SCRIPT ANDA
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB5CUJDB-1qc6_Cmz3MFWMowg9PdYCqFaipflQoynN1CafEvagQVulfDM0rxyZwfI-2g/exec"; 
         let currentUser = null;
 
@@ -327,8 +326,6 @@
             const password = document.getElementById('password').value;
 
             try {
-                // --- PERUBAHAN UTAMA: MENGGUNAKAN METODE GET ---
-                // Kita masukkan data JSON ke dalam URL (Query Parameter)
                 const payload = JSON.stringify({ username, password });
                 const finalUrl = `${SCRIPT_URL}?action=login&data=${encodeURIComponent(payload)}`;
                 
@@ -349,15 +346,18 @@
                     throw new Error("Format JSON salah");
                 }
 
-                // Cek status login
+                // --- PERBAIKAN LOGIKA DI SINI ---
+                // Script GS mengembalikan: { "status": "success", "data": {...} }
+                // Jadi kita akses langsung json.status dan json.data, bukan json.result
+                
                 if (json.status === 'success' && json.data) {
                     currentUser = json.data;
                     localStorage.setItem('ppda_user', JSON.stringify(currentUser));
                     showToast("Login Berhasil!", "success");
                     showDashboard();
                 } else {
-                    // Tampilkan pesan error dari server
-                    const errorMsg = json.message || "Login gagal.";
+                    // Jika status error atau data kosong
+                    const errorMsg = json.message || "Username atau Password salah!";
                     showToast(errorMsg, "error");
                     alert("Pesan Server: " + errorMsg);
                 }
@@ -409,7 +409,8 @@
             try {
                 const responseText = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran", { redirect: 'follow' }).then(r => r.text());
                 const json = JSON.parse(responseText);
-                const status = json.value; // Perhatikan disini, ambil langsung 'value'
+                // Sesuaikan juga disini: json.value (bukan json.result.value)
+                const status = json.value;
                 const isChecked = status === "Buka";
                 document.getElementById('togglePendaftaran').checked = isChecked;
             } catch (e) { console.error(e); }
@@ -422,7 +423,6 @@
             
             try {
                 showToast(`Status diubah menjadi: ${newValue}`, "success");
-                // Kita tetap pakai POST untuk action admin yang lain, karena sudah stabil
                 const formData = new FormData();
                 formData.append('action', 'togglePendaftaran');
                 formData.append('auth', 'admin');
@@ -445,6 +445,7 @@
                 const response = JSON.parse(responseText);
 
                 tbody.innerHTML = '';
+                // Sesuaikan disini juga: response.status (bukan response.result.status)
                 if(response.status === 'success') {
                     const users = response.data;
                     users.forEach(user => {
