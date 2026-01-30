@@ -9,12 +9,11 @@
     
     <style>
         :root {
-            --primary-color: #1E5631; /* Hijau Tua */
-            --secondary-color: #4C9A2A; /* Hijau Muda */
-            --accent-color: #D4AF37; /* Emas */
+            --primary-color: #1E5631;
+            --secondary-color: #4C9A2A;
+            --accent-color: #D4AF37;
             --bg-light: #F3F7F4;
             --text-dark: #2c3e50;
-            --text-muted: #7f8c8d;
             --white: #ffffff;
             --sidebar-width: 260px;
         }
@@ -107,7 +106,7 @@
         }
 
         .top-bar-mobile {
-            display: none; /* Desktop hidden */
+            display: none;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
@@ -154,11 +153,22 @@
         }
         .btn:hover { background: var(--primary-color); transform: translateY(-2px); }
         .btn-sm { padding: 8px 15px; font-size: 0.85rem; }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-icon { padding: 8px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 8px; }
-        .btn-edit { background: #3498db; color: white; }
-        .btn-delete { background: #e74c3c; color: white; }
+
+        /* Tombol Edit & Hapus Sebelahan */
+        .action-group {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .btn-icon {
+            padding: 8px; width: 35px; height: 35px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 8px; border: none; cursor: pointer;
+            color: white; transition: transform 0.2s;
+        }
+        .btn-icon:hover { transform: scale(1.1); }
+        .btn-edit { background: #3498db; }
+        .btn-delete { background: #e74c3c; }
 
         /* Switch */
         .switch-container { display: flex; justify-content: space-between; align-items: center; }
@@ -204,7 +214,32 @@
         }
         .login-icon { font-size: 3rem; color: var(--accent-color); margin-bottom: 20px; }
 
+        /* --- NEW TOAST NOTIFICATION --- */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+        }
+        .toast {
+            min-width: 300px;
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+            border-left: 5px solid transparent;
+        }
+        .toast.success { border-left-color: var(--secondary-color); }
+        .toast.success i { color: var(--secondary-color); }
+        .toast.error { border-left-color: #e74c3c; }
+        .toast.error i { color: #e74c3c; }
+        
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
 
         /* Responsive Mobile */
         .mobile-menu-btn { display: none; font-size: 1.5rem; cursor: pointer; }
@@ -223,6 +258,9 @@
     </style>
 </head>
 <body>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- LOGIN SECTION -->
     <div id="loginScreen" class="login-screen">
@@ -263,10 +301,10 @@
                 <li class="nav-item" onclick="switchTab('users')">
                     <i class="fas fa-users-cog"></i> Manajemen User
                 </li>
-                <li class="nav-item" onclick="alert('Menu Data Santri (Placeholder)')">
+                <li class="nav-item" onclick="switchTab('santri')">
                     <i class="fas fa-user-graduate"></i> Data Santri
                 </li>
-                <li class="nav-item" onclick="alert('Menu Akademik (Placeholder)')">
+                <li class="nav-item" onclick="switchTab('akademik')">
                     <i class="fas fa-book"></i> Akademik
                 </li>
             </ul>
@@ -277,7 +315,7 @@
                     <div style="font-size:0.9rem; font-weight:600;" id="sidebarUsername">Admin</div>
                     <div style="font-size:0.75rem; opacity:0.8;">Administrator</div>
                 </div>
-                <i class="fas fa-sign-out-alt" style="cursor: pointer;" onclick="logout()"></i>
+                <i class="fas fa-sign-out-alt" style="cursor: pointer; padding: 10px;" onclick="logout()" title="Keluar"></i>
             </div>
         </aside>
 
@@ -342,6 +380,17 @@
                 </div>
             </div>
 
+            <!-- CONTENT: PLACEHOLDERS -->
+            <div id="tab-santri" class="tab-content" style="display: none;">
+                <div class="page-header"><h1>Data Santri</h1></div>
+                <div class="card"><p>Halaman ini sedang dalam pengembangan.</p></div>
+            </div>
+
+            <div id="tab-akademik" class="tab-content" style="display: none;">
+                <div class="page-header"><h1>Akademik</h1></div>
+                <div class="card"><p>Halaman ini sedang dalam pengembangan.</p></div>
+            </div>
+
         </main>
     </div>
 
@@ -354,7 +403,7 @@
                 <input type="hidden" id="userId">
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" id="modalUsername" class="form-control" required>
+                    input type="text" id="modalUsername" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -408,12 +457,13 @@
                 if (json.status === 'success' && json.data) {
                     currentUser = json.data;
                     localStorage.setItem('ppda_user', JSON.stringify(currentUser));
+                    showToast("Login Berhasil!", "success");
                     initDashboard();
                 } else {
-                    alert(json.message || "Login Gagal");
+                    showToast(json.message || "Login Gagal", "error");
                 }
             } catch (err) {
-                alert("Error: " + err.message);
+                showToast("Error: " + err.message, "error");
             } finally {
                 btn.innerText = oriText;
                 btn.disabled = false;
@@ -432,8 +482,11 @@
         }
 
         function logout() {
-            localStorage.removeItem('ppda_user');
-            location.reload();
+            // Konfirmasi Keluar
+            if(confirm("Apakah Anda yakin ingin keluar dari sistem?")) {
+                localStorage.removeItem('ppda_user');
+                location.reload();
+            }
         }
 
         // --- UI LOGIC ---
@@ -446,12 +499,33 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
             document.getElementById('tab-' + tabName).style.display = 'block';
-            // Highlight menu based on index (simple logic)
             if(tabName === 'setting') document.querySelectorAll('.nav-item')[0].classList.add('active');
             if(tabName === 'users') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if(tabName === 'santri') document.querySelectorAll('.nav-item')[2].classList.add('active');
+            if(tabName === 'akademik') document.querySelectorAll('.nav-item')[3].classList.add('active');
             
-            // Close sidebar on mobile after click
             document.getElementById('sidebar').classList.remove('active');
+        }
+
+        // --- NEW TOAST FUNCTION ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Hapus elemen setelah animasi selesai (3 detik)
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
         // --- DATA LOGIC ---
@@ -472,8 +546,10 @@
                 fd.append('action', 'togglePendaftaran');
                 fd.append('auth', 'admin');
                 await fetch(SCRIPT_URL, { method: 'POST', body: fd, redirect: 'follow' });
-                alert(`Status diubah menjadi: ${status}`);
-            } catch(e) { alert("Gagal mengubah status"); }
+                showToast(`Status diubah menjadi: ${status}`, "success");
+            } catch(e) { 
+                showToast("Gagal mengubah status", "error"); 
+            }
         }
 
         async function loadUsers() {
@@ -494,14 +570,18 @@
                             <td>${user.username}</td>
                             <td><span style="background:${user.role==='admin'?'#f1c40f':'#bdc3c7'}; color:${user.role==='admin'?'#fff':'#555'}; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600;">${user.role}</span></td>
                             <td style="text-align: right;">
-                                <button class="btn-icon btn-edit" onclick="editUser('${user.id}', '${user.username}', '${user.password}', '${user.role}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon btn-delete" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
+                                <div class="action-group">
+                                    <button class="btn-icon btn-edit" onclick="editUser('${user.id}', '${user.username}', '${user.password}', '${user.role}')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon btn-delete" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
                     });
                 }
-            } catch(e) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Gagal memuat</td></tr>'; }
+            } catch(e) { 
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Gagal memuat</td></tr>'; 
+            }
         }
 
         const userModal = document.getElementById('userModal');
@@ -526,7 +606,7 @@
             userModal.style.display = 'flex';
         }
 
-        // PERBAIKAN UTAMA: Menggunakan POST method dan FormData
+        // --- PERBAIKAN UTAMA: MENGGUNAKAN CONTENT-TYPE JSON ---
         async function handleUserSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('userId').value;
@@ -539,36 +619,54 @@
             };
 
             try {
-                const fd = new FormData();
-                fd.append('action', action);
-                fd.append('auth', 'admin');
-                fd.append('data', JSON.stringify(dataPayload));
-
-                // PENTING: Gunakan method POST secara eksplisit
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: fd, 
-                    redirect: 'follow' 
+                // Kita kirim sebagai JSON String murni agar GAS bisa membaca e.postData.contents dengan benar
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(dataPayload), // Kirim Body JSON String
+                    headers: {
+                        'Content-Type': 'text/plain' // Trik agar tidak konflik CORS
+                    },
+                    redirect: 'follow'
                 });
 
-                alert(id ? "User diperbarui!" : "User ditambahkan!");
+                // Kita perlu menyisipkan 'action' dan 'auth' 
+                // Cara termudah adalah via Query String di URL, tapi karena method POST body lebih dominan di backend kita sebelumnya, 
+                // mari kita modifikasi sedikit URL atau payloadnya.
+                
+                // SOLUSI TERBAIK: Tambahkan parameter ke URL
+                const urlWithParams = `${SCRIPT_URL}?action=${action}&auth=admin`;
+                
+                await fetch(urlWithParams, {
+                    method: 'POST',
+                    body: JSON.stringify(dataPayload),
+                    headers: { 'Content-Type': 'text/plain' }, // Penting!
+                    redirect: 'follow'
+                });
+
+                showToast(id ? "User berhasil diperbarui!" : "User berhasil ditambahkan!", "success");
                 closeUserModal();
                 loadUsers();
+
             } catch (err) {
-                alert("Gagal menyimpan: " + err.message);
+                console.error(err);
+                showToast("Gagal menyimpan data.", "error");
             }
         }
 
         async function deleteUser(id) {
             if(!confirm("Hapus user ini?")) return;
             try {
-                const fd = new FormData();
-                fd.append('action', 'deleteUser');
-                fd.append('auth', 'admin');
-                fd.append('data', JSON.stringify({ id }));
-                await fetch(SCRIPT_URL, { method: 'POST', body: fd, redirect: 'follow' });
+                // Kirim parameter via URL untuk DELETE juga
+                const urlWithParams = `${SCRIPT_URL}?action=deleteUser&auth=admin`;
+                await fetch(urlWithParams, {
+                    method: 'POST',
+                    body: JSON.stringify({ id }),
+                    headers: { 'Content-Type': 'text/plain' },
+                    redirect: 'follow'
+                });
+                showToast("User dihapus", "success");
                 loadUsers();
-            } catch(e) { alert("Gagal menghapus"); }
+            } catch(e) { showToast("Gagal menghapus", "error"); }
         }
 
         window.onclick = function(e) {
