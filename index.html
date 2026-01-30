@@ -28,16 +28,15 @@
             display: flex;
         }
 
-        /* --- LOGIN (BG PUTIH, BERSIH, SHADOW DALAM) --- */
+        /* --- LOGIN SECTION --- */
         .login-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-white); /* BG Putih Bersih */
+            background-color: var(--bg-white); 
             display: flex; justify-content: center; align-items: center; z-index: 2000;
         }
 
         .login-card {
             background: var(--bg-white);
-            /* Shadow Dalam & Mewah */
             box-shadow: 0 20px 60px rgba(0,0,0,0.15); 
             border-radius: 20px;
             padding: 40px 30px;
@@ -54,23 +53,19 @@
             border-radius: 0 0 4px 4px;
         }
 
-        .login-icon { 
-            font-size: 3rem; 
-            color: var(--primary-color); /* Ikon sama dengan brand, lebih netral */
-            margin-bottom: 20px; 
-        }
+        .login-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; }
         .login-card h2 { color: var(--text-dark); margin-bottom: 5px; font-weight: 700; font-size: 1.5rem; }
         .login-card p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
         
-        /* Form Login Ikon Rapi */
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
         
+        /* Fix Ikon Login Agar Rapi & Tidak Berantakan */
         .input-wrapper { position: relative; }
-        .input-wrapper i.icon-left { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9rem; transition: color 0.3s; }
-        .input-wrapper:focus-within i.icon-left { color: var(--secondary-color); } /* Ikon berubah warna saat fokus */
+        .input-wrapper i.icon-left { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9rem; transition: color 0.3s; z-index: 2; pointer-events: none; }
+        .input-wrapper:focus-within i.icon-left { color: var(--secondary-color); }
         
-        .input-wrapper i.toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer; transition: color 0.2s; font-size: 0.9rem; }
+        .input-wrapper i.toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer; transition: color 0.2s; font-size: 0.9rem; z-index: 3; }
         .input-wrapper i.toggle-pass:hover { color: var(--primary-color); }
 
         .form-control {
@@ -88,7 +83,7 @@
             color: var(--bg-white);
             display: flex; flex-direction: column; padding: 20px;
             transition: transform 0.3s ease; position: relative; z-index: 100;
-            box-shadow: 5px 0 25px rgba(0,0,0,0.1); /* Shadow Sidebar */
+            box-shadow: 5px 0 25px rgba(0,0,0,0.1);
         }
 
         .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -102,20 +97,13 @@
             display: flex; align-items: center; gap: 15px;
             padding: 12px 15px; margin-bottom: 8px;
             border-radius: 10px; cursor: pointer;
-            transition: all 0.3s;
-            color: rgba(255,255,255,0.85);
+            transition: all 0.3s; color: rgba(255,255,255,0.85);
             font-weight: 500; font-size: 0.95rem;
             position: relative;
         }
         .nav-item:hover { background: rgba(255,255,255,0.1); color: var(--bg-white); transform: translateX(3px); }
-        .nav-item.active { 
-            background: var(--bg-white); 
-            color: var(--primary-color); 
-            font-weight: 700; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-        }
+        .nav-item.active { background: var(--bg-white); color: var(--primary-color); font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        /* Tombol Edit Menu (Kecil di sebelah kanan menu) */
         .edit-menu-btn {
             position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
             opacity: 0; width: 24px; height: 24px;
@@ -123,11 +111,9 @@
             background: rgba(0,0,0,0.2); color: white; font-size: 0.7rem; cursor: pointer;
             transition: all 0.2s;
         }
-        /* Tombol edit hanya muncul di mode edit sidebar */
         .sidebar.edit-mode .edit-menu-btn { opacity: 1; }
         .sidebar.edit-mode .edit-menu-btn:hover { background: var(--accent-color); }
 
-        /* Wrapper Admin Controls */
         .admin-controls { margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .btn-edit-mode {
             width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.3);
@@ -159,8 +145,8 @@
 
         .card {
             background: var(--bg-white); border-radius: 15px; padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Shadow Diperkuat */
-            margin-bottom: 20px; border-left: 5px solid var(--secondary-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 20px;
+            border-left: 5px solid var(--secondary-color);
         }
         .card h3 { margin-bottom: 20px; color: var(--text-dark); font-size: 1.1rem; }
 
@@ -168,17 +154,16 @@
         .form-group-dashboard label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
         .form-control-dashboard {
             width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 10px;
-            font-size: 0.95rem; outline: none; transition: all 0.3s; background: #fafafa;
+            font-size: 0.95rem; outline: none; transition: border 0.3s; background: #fafafa;
         }
         .form-control-dashboard:focus { border-color: var(--secondary-color); background: #fff; box-shadow: 0 0 0 3px rgba(76, 154, 42, 0.1); }
 
-        /* Buttons */
         .btn {
             padding: 12px 25px; border: none; border-radius: 50px;
             background: var(--secondary-color); color: var(--bg-white);
             font-weight: 600; cursor: pointer; transition: all 0.3s;
             display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Shadow Tombol */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         .btn:hover { background: var(--primary-color); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
         .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -210,8 +195,7 @@
         
         /* --- MODAL --- */
         .modal {
-            display: none; position: fixed; z-index: 2000;
-            left: 0; top: 0; width: 100%; height: 100%;
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
             align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.3s ease;
@@ -221,7 +205,7 @@
         .modal-content {
             background: var(--bg-white); border-radius: 20px;
             width: 90%; max-width: 450px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.3); /* Shadow Modal Sangat Dalam */
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
             overflow: hidden;
             transform: scale(0.9); transition: transform 0.3s ease;
         }
@@ -242,7 +226,6 @@
         .modal-body { padding: 30px; }
         .modal-footer { padding: 20px 30px; background: #f9f9f9; display: flex; justify-content: flex-end; gap: 10px; }
 
-        /* Toast */
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast {
             min-width: 320px; background: var(--bg-white); backdrop-filter: blur(10px);
@@ -284,7 +267,8 @@
             <h2>PPDA SYSTEM</h2>
             <p>Silakan masuk untuk mengelola sistem</p>
             
-            <form id="loginForm">
+            <!-- TOMBOL FIX: Onsubmit langsung memanggil fungsi agar tidak refresh -->
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin(event);">
                 <div class="form-group">
                     <label>Username</label>
                     <div class="input-wrapper">
@@ -324,7 +308,6 @@
                 <li class="nav-item" onclick="switchTab('users')">
                     <i class="fas fa-users-cog"></i> Manajemen User
                 </li>
-                <!-- Dynamic Menus inserted here -->
                 <li class="nav-item" onclick="switchTab('santri')">
                     <i class="fas fa-user-graduate"></i> Data Santri
                 </li>
@@ -355,7 +338,7 @@
                     <i class="fas fa-bars"></i>
                 </div>
                 <h3 style="color: var(--primary-color);">PPDA System</h3>
-                <div style="width: 24px;"></div>
+                <div style="width: 24px;"></div> 
             </div>
 
             <!-- CONTENT: PENGATURAN -->
@@ -364,6 +347,7 @@
                     <h1>Pengaturan Sistem</h1>
                     <p style="color: var(--text-muted);">Atur status pendaftaran santri.</p>
                 </div>
+
                 <div class="card">
                     <div class="switch-container">
                         <div>
@@ -384,6 +368,7 @@
                     <h1>Manajemen User</h1>
                     <p style="color: var(--text-muted);">Tambah, edit, atau hapus akses pengguna sistem.</p>
                 </div>
+
                 <div class="card">
                     <button id="btnAddUser" class="btn" onclick="openUserModal()">
                         <i class="fas fa-plus"></i> Tambah User Baru
@@ -476,7 +461,7 @@
     <div id="menuModal" class="modal">
         <div class="modal-content">
             <div class="modal-header" style="background: var(--secondary-color);">
-                <h3 id="modalMenuTitle">Tambah Menu</h3>
+                <h3 id="modalMenuTitle">Tambah Menu Baru</h3>
                 <i class="fas fa-times close-modal-btn" onclick="closeModal('menuModal')"></i>
             </div>
             <div class="modal-body">
@@ -487,14 +472,15 @@
                         <input type="text" id="menuName" class="form-control-dashboard" placeholder="Contoh: Data Guru" required>
                     </div>
                     <div class="form-group-dashboard">
-                        <label>Link File HTML</label>
+                        <label>Nama File HTML (Link)</label>
                         <input type="text" id="menuLink" class="form-control-dashboard" placeholder="Contoh: Data-Guru.html" required>
+                        <small style="color: #7f8c8d;">Pastikan file ada satu folder dengan index.html</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('menuModal')">Batal</button>
-                <button type="button" class="btn btn-sm" onclick="handleAddMenu()">Simpan</button>
+                <button type="button" class="btn btn-sm" onclick="handleAddMenu()">Simpan Menu</button>
             </div>
         </div>
     </div>
@@ -511,18 +497,21 @@
                 initDashboard();
             }
 
+            // --- TOGGLE PASSWORD ICON ---
             const togglePass = document.getElementById('togglePassword');
             const passInput = document.getElementById('password');
-            togglePass.addEventListener('click', function() {
-                const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passInput.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-            });
-
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
             
+            // Pastikan elemen ada sebelum listener dipasang
+            if(togglePass && passInput){
+                togglePass.addEventListener('click', function() {
+                    const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passInput.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // Mobile sidebar logic
             document.addEventListener('click', function(event) {
                 const sidebar = document.getElementById('sidebar');
                 const mobileBtn = document.querySelector('.mobile-menu-btn');
@@ -534,8 +523,11 @@
             });
         });
 
+        // --- FUNGSI LOGIN ---
         async function handleLogin(e) {
+            // Cegah refresh halaman
             e.preventDefault();
+
             const btn = document.querySelector('#loginForm button');
             const oriText = btn.innerText;
             btn.innerText = "Memproses...";
@@ -546,7 +538,9 @@
                     username: document.getElementById('username').value, 
                     password: document.getElementById('password').value 
                 });
+                
                 const url = `${SCRIPT_URL}?action=login&data=${encodeURIComponent(payload)}`;
+                
                 const res = await fetch(url).then(r => r.text());
                 const json = JSON.parse(res);
 
@@ -578,17 +572,17 @@
             const toggleEl = document.getElementById('togglePendaftaran');
             const btnAddUser = document.getElementById('btnAddUser');
             const msgAccess = document.getElementById('userAccessMsg');
-            const adminControls = document.getElementById('adminControls');
+            const addMenuWrapper = document.getElementById('adminControls');
 
             if(!isAdmin) {
                 toggleEl.disabled = true;
                 btnAddUser.style.display = 'none';
                 msgAccess.style.display = 'block';
-                adminControls.style.display = 'none';
+                addMenuWrapper.style.display = 'none';
             } else {
+                addMenuWrapper.style.display = 'block';
                 btnAddUser.style.display = 'inline-flex';
                 msgAccess.style.display = 'none';
-                adminControls.style.display = 'block';
             }
 
             loadStatusPendaftaran();
@@ -620,28 +614,14 @@
             document.getElementById('sidebar').classList.remove('active');
         }
 
-        // --- EDIT MODE LOGIC ---
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const sidebar = document.getElementById('sidebar');
-            const btnText = document.getElementById('editModeText');
+        // --- FITUR MENU DINAMIS ---
+        let dynamicMenus = [];
 
-            if(isEditMode) {
-                sidebar.classList.add('edit-mode');
-                btnText.innerText = "Selesai Edit";
-                showToast("Mode Edit Menu Aktif", "success");
-            } else {
-                sidebar.classList.remove('edit-mode');
-                btnText.innerText = "Edit Menu";
-            }
-        }
-
-        // --- DYNAMIC MENUS ---
         async function loadDynamicMenus() {
             try {
                 const fd = new FormData();
                 fd.append('action', 'getMenus');
-                fd.append('auth', 'admin');
+                fd.append('auth', 'admin'); 
                 const res = await fetch(SCRIPT_URL, { method: 'POST', body: fd, redirect: 'follow' }).then(r => r.text());
                 const json = JSON.parse(res);
 
@@ -649,6 +629,7 @@
                 document.querySelectorAll('.dynamic-item').forEach(el => el.remove());
 
                 if(json.status === 'success' && json.data) {
+                    dynamicMenus = json.data;
                     let refNode = null;
                     Array.from(navList.children).forEach((li) => {
                         if(li.innerText.includes('Data Santri')) refNode = li;
@@ -659,8 +640,6 @@
                         const li = document.createElement('li');
                         li.className = 'nav-item dynamic-item';
                         li.innerHTML = `<i class="fas fa-link"></i> ${menu.name}`;
-                        
-                        // Tombol Edit (Kecil)
                         const editBtn = document.createElement('div');
                         editBtn.className = 'edit-menu-btn';
                         editBtn.innerHTML = '<i class="fas fa-pen"></i>';
@@ -668,12 +647,24 @@
                         li.appendChild(editBtn);
 
                         li.onclick = function() { window.location.href = menu.link; };
-                        
                         navList.insertBefore(li, refNode);
                     });
                 }
+            } catch(e) { console.log("No dynamic menus loaded"); }
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const sidebar = document.getElementById('sidebar');
+            const btnText = document.getElementById('editModeText');
+            if(isEditMode) {
+                sidebar.classList.add('edit-mode');
+                btnText.innerText = "Selesai Edit";
+                showToast("Mode Edit Menu Aktif", "success");
+            } else {
+                sidebar.classList.remove('edit-mode');
+                btnText.innerText = "Edit Menu";
             }
-        } catch(e) { console.log("No dynamic menus loaded"); }
         }
 
         function openMenuModal() { 
@@ -706,12 +697,12 @@
                     headers: { 'Content-Type': 'text/plain' },
                     redirect: 'follow'
                 });
-                
-                showToast(id ? "Menu diperbarui" : "Menu berhasil ditambahkan", "success");
+                showToast(id ? "Menu berhasil diperbarui" : "Menu berhasil ditambahkan", "success");
                 closeModal('menuModal');
+                document.getElementById('menuForm').reset();
                 loadDynamicMenus();
             } catch(err) {
-                showToast("Gagal menyimpan menu", "error");
+                showToast("Gagal menambah menu", "error");
             }
         }
 
@@ -804,6 +795,7 @@
             document.getElementById('modalUserTitle').innerText = 'Edit User';
             userModal.classList.add('show');
         }
+
         async function handleUserSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('userId').value;
@@ -814,6 +806,7 @@
                 password: document.getElementById('modalPassword').value, 
                 role: document.getElementById('modalRole').value 
             };
+
             try {
                 const url = `${SCRIPT_URL}?action=${action}&auth=admin`;
                 await fetch(url, {
@@ -829,6 +822,7 @@
                 showToast("Gagal menyimpan data.", "error");
             }
         }
+
         async function deleteUser(id) {
             if(!confirm("Hapus user ini?")) return;
             try {
