@@ -214,32 +214,75 @@
         }
         .login-icon { font-size: 3rem; color: var(--accent-color); margin-bottom: 20px; }
 
-        /* --- NEW TOAST NOTIFICATION --- */
+        /* --- CANTIK & ELEGANT TOAST NOTIFICATION --- */
         .toast-container {
-            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
+
         .toast {
-            min-width: 300px;
-            background: white;
+            min-width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             color: #333;
             padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
             gap: 15px;
-            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
             border-left: 5px solid transparent;
+            transform: translateX(100%);
         }
-        .toast.success { border-left-color: var(--secondary-color); }
-        .toast.success i { color: var(--secondary-color); }
-        .toast.error { border-left-color: #e74c3c; }
-        .toast.error i { color: #e74c3c; }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success { 
+            border-left-color: var(--secondary-color); 
+        }
+        .toast.success i { color: var(--secondary-color); background: #e8f5e9; }
+
+        .toast.error { 
+            border-left-color: #e74c3c; 
+        }
+        .toast.error i { color: #e74c3c; background: #fde8e8; }
+
+        .toast-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content h4 {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            color: var(--text-dark);
+        }
+
+        .toast-content p {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 0;
+        }
         
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(20px); } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
 
         /* Responsive Mobile */
         .mobile-menu-btn { display: none; font-size: 1.5rem; cursor: pointer; }
@@ -403,7 +446,8 @@
                 <input type="hidden" id="userId">
                 <div class="form-group">
                     <label>Username</label>
-                    input type="text" id="modalUsername" class="form-control" required>
+                    <!-- PERBAIKAN TYPO INPUT -->
+                    <input type="text" id="modalUsername" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -463,7 +507,7 @@
                     showToast(json.message || "Login Gagal", "error");
                 }
             } catch (err) {
-                showToast("Error: " + err.message, "error");
+                showToast("Error Koneksi", "error");
             } finally {
                 btn.innerText = oriText;
                 btn.disabled = false;
@@ -482,7 +526,6 @@
         }
 
         function logout() {
-            // Konfirmasi Keluar
             if(confirm("Apakah Anda yakin ingin keluar dari sistem?")) {
                 localStorage.removeItem('ppda_user');
                 location.reload();
@@ -507,24 +550,35 @@
             document.getElementById('sidebar').classList.remove('active');
         }
 
-        // --- NEW TOAST FUNCTION ---
+        // --- TOAST CANTIK ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const title = type === 'success' ? 'Berhasil' : 'Gagal';
             
             toast.innerHTML = `
-                <i class="fas ${icon}"></i>
-                <span>${message}</span>
+                <div class="toast-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="toast-content">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
             `;
             
             container.appendChild(toast);
             
-            // Hapus elemen setelah animasi selesai (3 detik)
+            // Trigger reflow untuk animasi
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Hapus elemen setelah 3 detik
             setTimeout(() => {
-                toast.remove();
+                toast.classList.remove('show');
+                toast.style.animation = 'fadeOut 0.4s forwards';
+                setTimeout(() => toast.remove(), 400);
             }, 3000);
         }
 
@@ -606,11 +660,18 @@
             userModal.style.display = 'flex';
         }
 
-        // --- PERBAIKAN UTAMA: MENGGUNAKAN CONTENT-TYPE JSON ---
+        // --- PERBAIKAN DATA TIDAK MASUK: METHOD POST JSON STRING ---
         async function handleUserSubmit(e) {
             e.preventDefault();
+            const btn = document.querySelector('#userForm button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
             const id = document.getElementById('userId').value;
             const action = id ? 'editUser' : 'addUser';
+            
+            // Persiapan Data
             const dataPayload = { 
                 id: id || undefined, 
                 username: document.getElementById('modalUsername').value, 
@@ -619,54 +680,48 @@
             };
 
             try {
-                // Kita kirim sebagai JSON String murni agar GAS bisa membaca e.postData.contents dengan benar
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(dataPayload), // Kirim Body JSON String
-                    headers: {
-                        'Content-Type': 'text/plain' // Trik agar tidak konflik CORS
-                    },
-                    redirect: 'follow'
-                });
+                // Kita tambahkan 'action' dan 'auth' ke URL untuk memisahkan logika backend
+                const url = `${SCRIPT_URL}?action=${action}&auth=admin`;
 
-                // Kita perlu menyisipkan 'action' dan 'auth' 
-                // Cara termudah adalah via Query String di URL, tapi karena method POST body lebih dominan di backend kita sebelumnya, 
-                // mari kita modifikasi sedikit URL atau payloadnya.
-                
-                // SOLUSI TERBAIK: Tambahkan parameter ke URL
-                const urlWithParams = `${SCRIPT_URL}?action=${action}&auth=admin`;
-                
-                await fetch(urlWithParams, {
+                // Kirim body sebagai JSON String (Cara Paling Stabil untuk Google Apps Script)
+                const response = await fetch(url, {
                     method: 'POST',
                     body: JSON.stringify(dataPayload),
-                    headers: { 'Content-Type': 'text/plain' }, // Penting!
+                    headers: { 'Content-Type': 'text/plain' }, // Trik anti-CORS
                     redirect: 'follow'
                 });
 
-                showToast(id ? "User berhasil diperbarui!" : "User berhasil ditambahkan!", "success");
+                if (!response.ok) throw new Error("Network response was not ok");
+
+                const resultText = await response.text();
+                console.log("Server Response:", resultText); // Debugging
+
+                showToast(id ? "Data user berhasil diperbarui" : "Data user berhasil ditambahkan", "success");
                 closeUserModal();
                 loadUsers();
 
             } catch (err) {
                 console.error(err);
-                showToast("Gagal menyimpan data.", "error");
+                showToast("Gagal menyimpan data. Cek koneksi.", "error");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
         async function deleteUser(id) {
             if(!confirm("Hapus user ini?")) return;
             try {
-                // Kirim parameter via URL untuk DELETE juga
-                const urlWithParams = `${SCRIPT_URL}?action=deleteUser&auth=admin`;
-                await fetch(urlWithParams, {
+                const url = `${SCRIPT_URL}?action=deleteUser&auth=admin`;
+                await fetch(url, {
                     method: 'POST',
                     body: JSON.stringify({ id }),
                     headers: { 'Content-Type': 'text/plain' },
                     redirect: 'follow'
                 });
-                showToast("User dihapus", "success");
+                showToast("User berhasil dihapus", "success");
                 loadUsers();
-            } catch(e) { showToast("Gagal menghapus", "error"); }
+            } catch(e) { showToast("Gagal menghapus user", "error"); }
         }
 
         window.onclick = function(e) {
