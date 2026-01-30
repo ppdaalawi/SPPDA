@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem PPDA - Pondok Pesantren Daruttauhid Al Alawi</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #1E5631; /* Hijau Islami Gelap */
-            --secondary-color: #4C9A2A; /* Hijau Daun */
-            --accent-color: #D4AF37; /* Emas */
+            --primary-color: #1E5631;
+            --secondary-color: #4C9A2A;
+            --accent-color: #D4AF37;
             --bg-color: #F3F7F4;
             --text-dark: #333;
             --text-light: #fff;
@@ -22,16 +20,10 @@
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
             background-color: var(--bg-color);
-            /* Background pattern halus */
             background-image: radial-gradient(var(--secondary-color) 0.5px, transparent 0.5px), radial-gradient(var(--secondary-color) 0.5px, var(--bg-color) 0.5px);
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
@@ -42,10 +34,9 @@
             color: var(--text-dark);
         }
 
-        /* --- Komponen UI --- */
         .container {
             width: 100%;
-            max-width: 420px; /* Default Login Width */
+            max-width: 420px;
             padding: 20px;
             transition: max-width 0.3s ease;
         }
@@ -56,7 +47,6 @@
             padding-top: 40px;
         }
 
-        /* Glassmorphism Panel */
         .panel {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -77,378 +67,89 @@
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
-        /* Login Header */
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h1 { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 5px; font-weight: 700; }
+        .login-header p { font-size: 0.85rem; color: #666; }
+        .login-header i { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 10px; }
 
-        .login-header h1 {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 500; color: var(--primary-color); }
 
-        .login-header p {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .login-header i {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-wrapper i.icon-left {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-        }
-
-        .input-wrapper i.toggle-pass {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .input-wrapper i.toggle-pass:hover {
-            color: var(--primary-color);
-        }
+        .input-wrapper { position: relative; }
+        .input-wrapper i.icon-left { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        .input-wrapper i.toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer; transition: color 0.2s; }
+        .input-wrapper i.toggle-pass:hover { color: var(--primary-color); }
 
         .form-control {
-            width: 100%;
-            padding: 12px 15px 12px 45px; /* space for icon */
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            outline: none;
+            width: 100%; padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd; border-radius: 10px;
+            font-size: 0.95rem; outline: none;
             transition: border-color 0.3s, box-shadow 0.3s;
             background: rgba(255, 255, 255, 0.9);
         }
-
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(76, 154, 42, 0.1);
-        }
+        .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(76, 154, 42, 0.1); }
 
         .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            color: white; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
         }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(30, 86, 49, 0.3); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-secondary { background: #fff; border: 1px solid #ddd; color: var(--text-dark); }
+        .btn-danger { background: #e74c3c; }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 86, 49, 0.3);
-        }
+        /* Dashboard */
+        .dashboard-layout { display: none; flex-direction: column; gap: 20px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--secondary-color); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; }
 
-        .btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; overflow-x: auto; }
+        .nav-item { padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #666; background: transparent; transition: all 0.3s; }
+        .nav-item.active { background: var(--primary-color); color: white; }
+        .nav-item:hover:not(.active) { background: rgba(30, 86, 49, 0.1); }
 
-        .btn-secondary {
-            background: #fff;
-            border: 1px solid #ddd;
-            color: var(--text-dark);
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-        }
+        .section-content { display: none; animation: fadeIn 0.4s ease; }
+        .section-content.active { display: block; }
 
-        /* --- Dashboard Styles --- */
-        .dashboard-layout {
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            gap: 20px;
-        }
+        .switch-container { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .switch-label h3 { font-size: 1.1rem; color: var(--text-dark); }
+        .switch-label p { font-size: 0.85rem; color: #888; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--secondary-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--secondary-color);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            overflow-x: auto;
-        }
-
-        .nav-item {
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #666;
-            background: transparent;
-            transition: all 0.3s;
-        }
-
-        .nav-item.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .nav-item:hover:not(.active) {
-            background: rgba(30, 86, 49, 0.1);
-        }
-
-        .section-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .section-content.active {
-            display: block;
-        }
-
-        /* Toggle Switch */
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .switch-label h3 {
-            font-size: 1.1rem;
-            color: var(--text-dark);
-        }
-
-        .switch-label p {
-            font-size: 0.85rem;
-            color: #888;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--secondary-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Table */
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 500;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .action-btns button {
-            margin-right: 5px;
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-        }
-        
+        .table-responsive { overflow-x: auto; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        th { background-color: var(--primary-color); color: white; font-weight: 500; }
+        tr:hover { background-color: #f9f9f9; }
+        .action-btns button { margin-right: 5px; padding: 5px 10px; font-size: 0.8rem; border-radius: 5px; cursor: pointer; border: none; }
         .btn-edit { background: #3498db; color: white; }
         .btn-delete { background: #e74c3c; color: white; }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideDown 0.3s ease;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        /* Utility */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .modal-content { background-color: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideDown 0.3s ease; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #aaa; }
         .hidden { display: none !important; }
-        
-        /* Toast Notification */
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 0.9rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
 
-        .toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-        
+        .toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 0.9rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         .toast.success { background-color: var(--secondary-color); }
         .toast.error { background-color: #e74c3c; }
 
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-        
-        /* Animations */
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 10px; }
             .panel { padding: 25px 20px; }
@@ -458,13 +159,9 @@
 </head>
 <body>
 
-    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast">Pesan notifikasi</div>
 
-    <!-- MAIN CONTAINER -->
     <div class="container" id="mainContainer">
-        
-        <!-- LOGIN SECTION -->
         <div id="loginSection" class="panel">
             <div class="login-header">
                 <i class="fas fa-mosque"></i>
@@ -493,9 +190,7 @@
             </form>
         </div>
 
-        <!-- DASHBOARD SECTION -->
         <div id="dashboardSection" class="panel dashboard-layout">
-            <!-- Top Bar -->
             <div class="top-bar">
                 <div class="user-info">
                     <div class="avatar" id="userAvatar">A</div>
@@ -509,17 +204,13 @@
                 </button>
             </div>
 
-            <!-- Navigation Tabs -->
             <div class="nav-tabs" id="navTabs">
                 <div class="nav-item active" onclick="switchTab('setting')">Setting</div>
                 <div class="nav-item hidden" id="menuSantri" onclick="switchTab('santri')">Data Santri (Placeholder)</div>
                 <div class="nav-item hidden" id="menuAkademik" onclick="switchTab('akademik')">Akademik (Placeholder)</div>
             </div>
 
-            <!-- Content: Setting (Admin Only) -->
             <div id="settingContent" class="section-content active">
-                
-                <!-- Toggle Pendaftaran -->
                 <div class="switch-container">
                     <div class="switch-label">
                         <h3>Status Pendaftaran</h3>
@@ -531,7 +222,6 @@
                     </label>
                 </div>
 
-                <!-- User Management -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3>Manajemen User</h3>
                     <button class="btn" style="width: auto; padding: 8px 15px; font-size: 0.85rem;" onclick="openUserModal()">
@@ -549,14 +239,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data will be populated here -->
                             <tr><td colspan="3" style="text-align: center;">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Content: Placeholders -->
             <div id="santriContent" class="section-content">
                 <div style="text-align: center; padding: 40px; color: #888;">
                     <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
@@ -576,7 +264,6 @@
         </div>
     </div>
 
-    <!-- MODAL USER (ADD/EDIT) -->
     <div id="userModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeUserModal()">&times;</span>
@@ -603,15 +290,11 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
-        // --- KONFIGURASI URL SCRIPT ---
+        // URL SCRIPT TERBARU
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB5CUJDB-1qc6_Cmz3MFWMowg9PdYCqFaipflQoynN1CafEvagQVulfDM0rxyZwfI-2g/exec"; 
-
-        // --- STATE GLOBAL ---
         let currentUser = null;
 
-        // --- UI EVENTS ---
         document.addEventListener("DOMContentLoaded", () => {
             const sessionUser = localStorage.getItem('ppda_user');
             if (sessionUser) {
@@ -621,7 +304,6 @@
 
             const togglePass = document.getElementById('togglePassword');
             const passInput = document.getElementById('password');
-            
             togglePass.addEventListener('click', function() {
                 const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passInput.setAttribute('type', type);
@@ -632,8 +314,6 @@
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
         });
-
-        // --- FUNGSI UTAMA ---
 
         async function handleLogin(e) {
             e.preventDefault();
@@ -646,7 +326,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-                        try {
+            try {
                 const formData = new FormData();
                 formData.append('action', 'login');
                 formData.append('data', JSON.stringify({ username, password }));
@@ -655,22 +335,27 @@
                     method: 'POST',
                     body: formData,
                     redirect: 'follow'
-                }).then(res => res.text()); // Ambil text dulu
+                }).then(res => res.text());
 
-                console.log("Raw Response:", responseText); // Debug
+                console.log("Raw Response:", responseText);
+
+                // Cek jika respon berupa Error HTML/Text dari Google
+                if (responseText.includes("Error") || responseText.includes("Exception") || responseText.includes("<html>")) {
+                    alert("DEBUG ERROR DARI SERVER:\n\n" + responseText.substring(0, 600) + "...\n\n(Pesan ini akan membantu kami mengetahui masalahnya)");
+                    throw new Error("Server Error (Lihat Debug)");
+                }
 
                 let json;
                 try {
                     json = JSON.parse(responseText);
                 } catch (err) {
-                    alert("DEBUG: Respon bukan JSON valid.\nIsi: " + responseText);
+                    alert("DEBUG: Respon bukan JSON valid.\nIsi Respon: " + responseText.substring(0, 300) + "...");
                     throw new Error("Format JSON salah");
                 }
 
-                // PENGECEKAN KEAMANAN (Security Check)
-                // Pastikan json.result ada sebelum membaca status
                 if (!json.result) {
-                    throw new Error("Format respon salah: 'result' tidak ditemukan");
+                    alert("DEBUG: JSON Valid tapi 'result' hilang.\nIsi Lengkap: " + JSON.stringify(json));
+                    throw new Error("Struktur JSON salah");
                 }
 
                 if (json.result.status === 'success' && json.result.data) {
@@ -679,15 +364,13 @@
                     showToast("Login Berhasil!", "success");
                     showDashboard();
                 } else {
-                    // Jika status error atau data kosong
                     const errorMsg = json.result.message || "Username atau Password salah!";
                     showToast(errorMsg, "error");
                 }
 
             } catch (error) {
                 console.error("Error Detail:", error);
-                alert("Terjadi kesalahan koneksi: " + error.message);
-                showToast("Terjadi kesalahan koneksi.", "error");
+                // showToast("Terjadi kesalahan koneksi.", "error"); // Optional
             } finally {
                 btn.disabled = false;
                 document.getElementById('loginText').innerText = originalText;
@@ -724,16 +407,14 @@
             if(tabName === 'setting') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
             if(tabName === 'santri') document.getElementById('menuSantri').classList.add('active');
             if(tabName === 'akademik') document.getElementById('menuAkademik').classList.add('active');
-
             document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabName + 'Content').classList.add('active');
         }
 
-        // --- FITUR: PENDAFTARAN ---
         async function loadStatusPendaftaran() {
             try {
-                const response = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran", { redirect: 'follow' }).then(r => r.text());
-                const json = JSON.parse(response);
+                const responseText = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran", { redirect: 'follow' }).then(r => r.text());
+                const json = JSON.parse(responseText);
                 const status = json.result.value;
                 const isChecked = status === "Buka";
                 document.getElementById('togglePendaftaran').checked = isChecked;
@@ -756,8 +437,6 @@
                 checkbox.checked = !checkbox.checked;
             }
         }
-
-        // --- FITUR: MANAJEMEN USER ---
         
         async function loadUsers() {
             const tbody = document.querySelector('#userTable tbody');
