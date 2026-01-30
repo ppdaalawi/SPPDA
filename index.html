@@ -291,7 +291,7 @@
     </div>
 
     <script>
-        // URL SCRIPT TERBARU
+        // URL SCRIPT ANDA
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB5CUJDB-1qc6_Cmz3MFWMowg9PdYCqFaipflQoynN1CafEvagQVulfDM0rxyZwfI-2g/exec"; 
         let currentUser = null;
 
@@ -327,50 +327,44 @@
             const password = document.getElementById('password').value;
 
             try {
-                const formData = new FormData();
-                formData.append('action', 'login');
-                formData.append('data', JSON.stringify({ username, password }));
+                // --- PERUBAHAN UTAMA: MENGGUNAKAN METODE GET ---
+                // Kita masukkan data JSON ke dalam URL (Query Parameter)
+                const payload = JSON.stringify({ username, password });
+                const finalUrl = `${SCRIPT_URL}?action=login&data=${encodeURIComponent(payload)}`;
                 
-                const responseText = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData,
+                console.log("Mengirim Login via GET ke URL:", finalUrl);
+
+                const responseText = await fetch(finalUrl, {
+                    method: 'GET', 
                     redirect: 'follow'
                 }).then(res => res.text());
 
                 console.log("Raw Response:", responseText);
 
-                // Cek jika respon berupa Error HTML/Text dari Google
-                if (responseText.includes("Error") || responseText.includes("Exception") || responseText.includes("<html>")) {
-                    alert("DEBUG ERROR DARI SERVER:\n\n" + responseText.substring(0, 600) + "...\n\n(Pesan ini akan membantu kami mengetahui masalahnya)");
-                    throw new Error("Server Error (Lihat Debug)");
-                }
-
                 let json;
                 try {
                     json = JSON.parse(responseText);
                 } catch (err) {
-                    alert("DEBUG: Respon bukan JSON valid.\nIsi Respon: " + responseText.substring(0, 300) + "...");
+                    alert("DEBUG: Respon bukan JSON.\nIsi Respon: " + responseText.substring(0, 300));
                     throw new Error("Format JSON salah");
                 }
 
-                if (!json.result) {
-                    alert("DEBUG: JSON Valid tapi 'result' hilang.\nIsi Lengkap: " + JSON.stringify(json));
-                    throw new Error("Struktur JSON salah");
-                }
-
-                if (json.result.status === 'success' && json.result.data) {
-                    currentUser = json.result.data;
+                // Cek status login
+                if (json.status === 'success' && json.data) {
+                    currentUser = json.data;
                     localStorage.setItem('ppda_user', JSON.stringify(currentUser));
                     showToast("Login Berhasil!", "success");
                     showDashboard();
                 } else {
-                    const errorMsg = json.result.message || "Username atau Password salah!";
+                    // Tampilkan pesan error dari server
+                    const errorMsg = json.message || "Login gagal.";
                     showToast(errorMsg, "error");
+                    alert("Pesan Server: " + errorMsg);
                 }
 
             } catch (error) {
                 console.error("Error Detail:", error);
-                // showToast("Terjadi kesalahan koneksi.", "error"); // Optional
+                alert("Terjadi kesalahan: " + error.message);
             } finally {
                 btn.disabled = false;
                 document.getElementById('loginText').innerText = originalText;
@@ -415,7 +409,7 @@
             try {
                 const responseText = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran", { redirect: 'follow' }).then(r => r.text());
                 const json = JSON.parse(responseText);
-                const status = json.result.value;
+                const status = json.value; // Perhatikan disini, ambil langsung 'value'
                 const isChecked = status === "Buka";
                 document.getElementById('togglePendaftaran').checked = isChecked;
             } catch (e) { console.error(e); }
@@ -428,6 +422,7 @@
             
             try {
                 showToast(`Status diubah menjadi: ${newValue}`, "success");
+                // Kita tetap pakai POST untuk action admin yang lain, karena sudah stabil
                 const formData = new FormData();
                 formData.append('action', 'togglePendaftaran');
                 formData.append('auth', 'admin');
@@ -450,8 +445,8 @@
                 const response = JSON.parse(responseText);
 
                 tbody.innerHTML = '';
-                if(response.result.status === 'success') {
-                    const users = response.result.data;
+                if(response.status === 'success') {
+                    const users = response.data;
                     users.forEach(user => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
