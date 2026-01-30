@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem PPDA - Pondok Pesantren Daruttauhid Al Alawi</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1E5631; /* Hijau Islami Gelap */
+            --secondary-color: #4C9A2A; /* Hijau Daun */
+            --accent-color: #D4AF37; /* Emas */
+            --bg-color: #F3F7F4;
+            --text-dark: #333;
+            --text-light: #fff;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            /* Background pattern halus */
+            background-image: radial-gradient(var(--secondary-color) 0.5px, transparent 0.5px), radial-gradient(var(--secondary-color) 0.5px, var(--bg-color) 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-dark);
+        }
+
+        /* --- Komponen UI --- */
+        .container {
+            width: 100%;
+            max-width: 420px; /* Default Login Width */
+            padding: 20px;
+            transition: max-width 0.3s ease;
+        }
+
+        .container.dashboard-mode {
+            max-width: 1000px;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+
+        /* Glassmorphism Panel */
+        .panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: var(--glass-border);
+            box-shadow: var(--shadow);
+            padding: 40px 30px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        /* Login Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .login-header i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i.icon-left {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .input-wrapper i.toggle-pass {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .input-wrapper i.toggle-pass:hover {
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 45px; /* space for icon */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(76, 154, 42, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 86, 49, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: var(--text-dark);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        /* --- Dashboard Styles --- */
+        .dashboard-layout {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+            background: transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-item:hover:not(.active) {
+            background: rgba(30, 86, 49, 0.1);
+        }
+
+        .section-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* Toggle Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .switch-label h3 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .switch-label p {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--secondary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .action-btns button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-edit { background: #3498db; color: white; }
+        .btn-delete { background: #e74c3c; color: white; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        
+        .toast.success { background-color: var(--secondary-color); }
+        .toast.error { background-color: #e74c3c; }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        
+        /* Animations */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
+            .panel { padding: 25px 20px; }
+            .nav-item { padding: 6px 15px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">Pesan notifikasi</div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container" id="mainContainer">
+        
+        <!-- LOGIN SECTION -->
+        <div id="loginSection" class="panel">
+            <div class="login-header">
+                <i class="fas fa-mosque"></i>
+                <h1>PPDA</h1>
+                <p>Pondok Pesantren Daruttauhid Al Alawi<br>Sendang Senori Tuban</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user icon-left"></i>
+                        <input type="text" id="username" class="form-control" placeholder="Masukkan username" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock icon-left"></i>
+                        <input type="password" id="password" class="form-control" placeholder="Masukkan password" required>
+                        <i class="fas fa-eye toggle-pass" id="togglePassword"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">
+                    <span id="loginText">Masuk</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" class="panel dashboard-layout">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">A</div>
+                    <div>
+                        <h4 id="displayUsername">Admin</h4>
+                        <small id="displayRole">Administrator</small>
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="logout()" style="width: auto; padding: 8px 15px; border-radius: 8px; font-size: 0.8rem;">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </button>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs" id="navTabs">
+                <div class="nav-item active" onclick="switchTab('setting')">Setting</div>
+                <div class="nav-item hidden" id="menuSantri" onclick="switchTab('santri')">Data Santri (Placeholder)</div>
+                <div class="nav-item hidden" id="menuAkademik" onclick="switchTab('akademik')">Akademik (Placeholder)</div>
+            </div>
+
+            <!-- Content: Setting (Admin Only) -->
+            <div id="settingContent" class="section-content active">
+                
+                <!-- Toggle Pendaftaran -->
+                <div class="switch-container">
+                    <div class="switch-label">
+                        <h3>Status Pendaftaran</h3>
+                        <p>Buka atau Tutup pendaftaran santri baru.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="togglePendaftaran" onchange="toggleStatus()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- User Management -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>Manajemen User</h3>
+                    <button class="btn" style="width: auto; padding: 8px 15px; font-size: 0.85rem;" onclick="openUserModal()">
+                        <i class="fas fa-plus"></i> Tambah User
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="userTable">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th style="text-align: right;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here -->
+                            <tr><td colspan="3" style="text-align: center;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Content: Placeholders -->
+            <div id="santriContent" class="section-content">
+                <div style="text-align: center; padding: 40px; color: #888;">
+                    <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
+                    <h3>Data Santri</h3>
+                    <p>Halaman ini akan memuat data-santri.html di masa depan.</p>
+                </div>
+            </div>
+            
+            <div id="akademikContent" class="section-content">
+                 <div style="text-align: center; padding: 40px; color: #888;">
+                    <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
+                    <h3>Akademik</h3>
+                    <p>Halaman ini akan memuat akademik.html di masa depan.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL USER (ADD/EDIT) -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeUserModal()">&times;</span>
+            <h2 id="modalTitle" style="margin-bottom: 20px; color: var(--primary-color);">Tambah User</h2>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="modalUsername" class="form-control" style="padding-left: 15px;" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="text" id="modalPassword" class="form-control" style="padding-left: 15px;" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="modalRole" class="form-control" style="padding-left: 15px;">
+                        <option value="admin">Admin</option>
+                        <option value="user">User Biasa</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- KONFIGURASI URL SCRIPT ---
+        // URL SUDAH DIPERBARUI SESUAI REQUEST
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB5CUJDB-1qc6_Cmz3MFWMowg9PdYCqFaipflQoynN1CafEvagQVulfDM0rxyZwfI-2g/exec"; 
+
+        // --- STATE GLOBAL ---
+        let currentUser = null;
+
+        // --- UI EVENTS ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Cek session (opsional sederhana)
+            const sessionUser = localStorage.getItem('ppda_user');
+            if (sessionUser) {
+                currentUser = JSON.parse(sessionUser);
+                showDashboard();
+            }
+
+            // Toggle Password
+            const togglePass = document.getElementById('togglePassword');
+            const passInput = document.getElementById('password');
+            
+            togglePass.addEventListener('click', function() {
+                const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            // Login Form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            // User Form (Modal)
+            document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
+        });
+
+        // --- FUNGSI UTAMA ---
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const originalText = document.getElementById('loginText').innerText;
+            
+            // UI Loading
+            btn.disabled = true;
+            document.getElementById('loginText').innerHTML = '<span class="spinner"></span> Memproses...';
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'login');
+                formData.append('data', JSON.stringify({ username, password }));
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                }).then(r => r.json());
+
+                if (response.result.status === 'success' && response.result.data) {
+                    currentUser = response.result.data;
+                    localStorage.setItem('ppda_user', JSON.stringify(currentUser));
+                    showToast("Login Berhasil!", "success");
+                    showDashboard();
+                } else {
+                    showToast("Username atau Password salah!", "error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                showToast("Terjadi kesalahan koneksi.", "error");
+            } finally {
+                btn.disabled = false;
+                document.getElementById('loginText').innerText = originalText;
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').style.display = 'flex'; // Use flex for layout
+            document.getElementById('mainContainer').classList.add('dashboard-mode');
+            
+            // Set User Info
+            document.getElementById('displayUsername').innerText = currentUser.username;
+            document.getElementById('displayRole').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Staff';
+            document.getElementById('userAvatar').innerText = currentUser.username.charAt(0).toUpperCase();
+
+            // Permission Check
+            if (currentUser.role !== 'admin') {
+                document.getElementById('togglePendaftaran').disabled = true;
+                document.querySelector('.switch-label p').innerText = "Hanya Admin yang bisa mengubah ini.";
+                // Sembunyikan setting user untuk non-admin
+                document.querySelector('.table-responsive').parentElement.querySelector('h3').parentElement.style.display = 'none'; 
+                document.querySelector('.table-responsive').style.display = 'none';
+            } else {
+                // Load data jika admin
+                loadStatusPendaftaran();
+                loadUsers();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('ppda_user');
+            location.reload();
+        }
+
+        function switchTab(tabName) {
+            // Update Nav Active
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(tabName === 'setting') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+            if(tabName === 'santri') document.getElementById('menuSantri').classList.add('active');
+            if(tabName === 'akademik') document.getElementById('menuAkademik').classList.add('active');
+
+            // Show Content
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + 'Content').classList.add('active');
+        }
+
+        // --- FITUR: PENDAFTARAN ---
+        async function loadStatusPendaftaran() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran").then(r => r.json());
+                const status = response.result.value;
+                const isChecked = status === "Buka";
+                document.getElementById('togglePendaftaran').checked = isChecked;
+            } catch (e) { console.error(e); }
+        }
+
+        async function toggleStatus() {
+            if(!currentUser || currentUser.role !== 'admin') return;
+
+            const checkbox = document.getElementById('togglePendaftaran');
+            const newValue = checkbox.checked ? "Buka" : "Tutup";
+            
+            try {
+                // Optimistic UI update
+                showToast(`Status diubah menjadi: ${newValue}`, "success");
+
+                const formData = new FormData();
+                formData.append('action', 'togglePendaftaran');
+                formData.append('auth', 'admin'); // simple auth check param
+                
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+            } catch (e) {
+                showToast("Gagal mengubah status", "error");
+                checkbox.checked = !checkbox.checked; // revert
+            }
+        }
+
+        // --- FITUR: MANAJEMEN USER ---
+        
+        async function loadUsers() {
+            const tbody = document.querySelector('#userTable tbody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>';
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'getUsers');
+                formData.append('auth', 'admin');
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(r => r.json());
+
+                tbody.innerHTML = '';
+                if(response.result.status === 'success') {
+                    const users = response.result.data;
+                    users.forEach(user => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${user.username}</td>
+                            <td><span style="background:${user.role==='admin'?'var(--accent-color)':'#ddd'}; color:${user.role==='admin'?'#fff':'#555'}; padding:2px 8px; border-radius:10px; font-size:0.75rem;">${user.role}</span></td>
+                            <td style="text-align: right;" class="action-btns">
+                                <button class="btn-edit" onclick="editUser('${user.id}', '${user.username}', '${user.password}', '${user.role}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Gagal memuat user</td></tr>';
+            }
+        }
+
+        // User CRUD
+        const userModal = document.getElementById('userModal');
+        
+        function openUserModal() {
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('modalTitle').innerText = 'Tambah User';
+            userModal.style.display = 'flex';
+        }
+        
+        function closeUserModal() {
+            userModal.style.display = 'none';
+        }
+
+        function editUser(id, username, password, role) {
+            document.getElementById('userId').value = id;
+            document.getElementById('modalUsername').value = username;
+            document.getElementById('modalPassword').value = password;
+            document.getElementById('modalRole').value = role;
+            document.getElementById('modalTitle').innerText = 'Edit User';
+            userModal.style.display = 'flex';
+        }
+
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('userId').value;
+            const username = document.getElementById('modalUsername').value;
+            const password = document.getElementById('modalPassword').value;
+            const role = document.getElementById('modalRole').value;
+            
+            const action = id ? 'editUser' : 'addUser';
+            const dataPayload = id ? { id, username, password, role } : { username, password, role };
+
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                formData.append('auth', 'admin');
+                formData.append('data', JSON.stringify(dataPayload));
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                
+                showToast(id ? "User berhasil diperbarui" : "User berhasil ditambahkan", "success");
+                closeUserModal();
+                loadUsers();
+            } catch (err) {
+                showToast("Gagal menyimpan user", "error");
+            }
+        }
+
+        async function deleteUser(id) {
+            if(!confirm("Yakin ingin menghapus user ini?")) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'deleteUser');
+                formData.append('auth', 'admin');
+                formData.append('data', JSON.stringify({ id }));
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                
+                showToast("User berhasil dihapus", "success");
+                loadUsers();
+            } catch (err) {
+                showToast("Gagal menghapus user", "error");
+            }
+        }
+
+        // Utility: Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show " + type;
+            toast.innerText = message;
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == userModal) {
+                closeUserModal();
+            }
+        }
+    </script>
+</body>
+</html>
