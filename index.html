@@ -606,7 +606,6 @@
     <!-- JAVASCRIPT -->
     <script>
         // --- KONFIGURASI URL SCRIPT ---
-        // URL SUDAH DIPERBARUI SESUAI REQUEST
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB5CUJDB-1qc6_Cmz3MFWMowg9PdYCqFaipflQoynN1CafEvagQVulfDM0rxyZwfI-2g/exec"; 
 
         // --- STATE GLOBAL ---
@@ -614,14 +613,12 @@
 
         // --- UI EVENTS ---
         document.addEventListener("DOMContentLoaded", () => {
-            // Cek session (opsional sederhana)
             const sessionUser = localStorage.getItem('ppda_user');
             if (sessionUser) {
                 currentUser = JSON.parse(sessionUser);
                 showDashboard();
             }
 
-            // Toggle Password
             const togglePass = document.getElementById('togglePassword');
             const passInput = document.getElementById('password');
             
@@ -632,10 +629,7 @@
                 this.classList.toggle('fa-eye-slash');
             });
 
-            // Login Form
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-            // User Form (Modal)
             document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
         });
 
@@ -646,7 +640,6 @@
             const btn = document.getElementById('loginBtn');
             const originalText = document.getElementById('loginText').innerText;
             
-            // UI Loading
             btn.disabled = true;
             document.getElementById('loginText').innerHTML = '<span class="spinner"></span> Memproses...';
 
@@ -660,11 +653,24 @@
                 
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: formData
-                }).then(r => r.json());
+                    body: formData,
+                    redirect: 'follow' // Penting untuk mengatasi redirect Google
+                }).then(res => res.text()); // Ambil sebagai text dulu untuk debugging
 
-                if (response.result.status === 'success' && response.result.data) {
-                    currentUser = response.result.data;
+                // Debug: Alert isi respon jika user gagal login
+                console.log("Raw Response:", response);
+
+                let json;
+                try {
+                    json = JSON.parse(response);
+                } catch (err) {
+                    console.error("Gagal parse JSON:", err);
+                    alert("DEBUG: Respon Server bukan JSON.\nIsi Respon: " + response.substring(0, 200) + "...");
+                    throw new Error("Format respon salah");
+                }
+
+                if (json.result.status === 'success' && json.result.data) {
+                    currentUser = json.result.data;
                     localStorage.setItem('ppda_user', JSON.stringify(currentUser));
                     showToast("Login Berhasil!", "success");
                     showDashboard();
@@ -673,7 +679,8 @@
                 }
 
             } catch (error) {
-                console.error(error);
+                console.error("Fetch Error:", error);
+                alert("Terjadi kesalahan koneksi: " + error.message);
                 showToast("Terjadi kesalahan koneksi.", "error");
             } finally {
                 btn.disabled = false;
@@ -683,23 +690,19 @@
 
         function showDashboard() {
             document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('dashboardSection').style.display = 'flex'; // Use flex for layout
+            document.getElementById('dashboardSection').style.display = 'flex';
             document.getElementById('mainContainer').classList.add('dashboard-mode');
             
-            // Set User Info
             document.getElementById('displayUsername').innerText = currentUser.username;
             document.getElementById('displayRole').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Staff';
             document.getElementById('userAvatar').innerText = currentUser.username.charAt(0).toUpperCase();
 
-            // Permission Check
             if (currentUser.role !== 'admin') {
                 document.getElementById('togglePendaftaran').disabled = true;
                 document.querySelector('.switch-label p').innerText = "Hanya Admin yang bisa mengubah ini.";
-                // Sembunyikan setting user untuk non-admin
                 document.querySelector('.table-responsive').parentElement.querySelector('h3').parentElement.style.display = 'none'; 
                 document.querySelector('.table-responsive').style.display = 'none';
             } else {
-                // Load data jika admin
                 loadStatusPendaftaran();
                 loadUsers();
             }
@@ -711,13 +714,11 @@
         }
 
         function switchTab(tabName) {
-            // Update Nav Active
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             if(tabName === 'setting') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
             if(tabName === 'santri') document.getElementById('menuSantri').classList.add('active');
             if(tabName === 'akademik') document.getElementById('menuAkademik').classList.add('active');
 
-            // Show Content
             document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabName + 'Content').classList.add('active');
         }
@@ -725,8 +726,9 @@
         // --- FITUR: PENDAFTARAN ---
         async function loadStatusPendaftaran() {
             try {
-                const response = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran").then(r => r.json());
-                const status = response.result.value;
+                const response = await fetch(SCRIPT_URL + "?action=getStatusPendaftaran", { redirect: 'follow' }).then(r => r.text());
+                const json = JSON.parse(response);
+                const status = json.result.value;
                 const isChecked = status === "Buka";
                 document.getElementById('togglePendaftaran').checked = isChecked;
             } catch (e) { console.error(e); }
@@ -734,22 +736,18 @@
 
         async function toggleStatus() {
             if(!currentUser || currentUser.role !== 'admin') return;
-
             const checkbox = document.getElementById('togglePendaftaran');
             const newValue = checkbox.checked ? "Buka" : "Tutup";
             
             try {
-                // Optimistic UI update
                 showToast(`Status diubah menjadi: ${newValue}`, "success");
-
                 const formData = new FormData();
                 formData.append('action', 'togglePendaftaran');
-                formData.append('auth', 'admin'); // simple auth check param
-                
-                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                formData.append('auth', 'admin');
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, redirect: 'follow' });
             } catch (e) {
                 showToast("Gagal mengubah status", "error");
-                checkbox.checked = !checkbox.checked; // revert
+                checkbox.checked = !checkbox.checked;
             }
         }
 
@@ -763,7 +761,8 @@
                 const formData = new FormData();
                 formData.append('action', 'getUsers');
                 formData.append('auth', 'admin');
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(r => r.json());
+                const responseText = await fetch(SCRIPT_URL, { method: 'POST', body: formData, redirect: 'follow' }).then(r => r.text());
+                const response = JSON.parse(responseText);
 
                 tbody.innerHTML = '';
                 if(response.result.status === 'success') {
@@ -782,11 +781,11 @@
                     });
                 }
             } catch (e) {
+                console.error(e);
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Gagal memuat user</td></tr>';
             }
         }
 
-        // User CRUD
         const userModal = document.getElementById('userModal');
         
         function openUserModal() {
@@ -824,7 +823,7 @@
                 formData.append('action', action);
                 formData.append('auth', 'admin');
                 formData.append('data', JSON.stringify(dataPayload));
-                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, redirect: 'follow' });
                 
                 showToast(id ? "User berhasil diperbarui" : "User berhasil ditambahkan", "success");
                 closeUserModal();
@@ -842,7 +841,7 @@
                 formData.append('action', 'deleteUser');
                 formData.append('auth', 'admin');
                 formData.append('data', JSON.stringify({ id }));
-                await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, redirect: 'follow' });
                 
                 showToast("User berhasil dihapus", "success");
                 loadUsers();
@@ -851,7 +850,6 @@
             }
         }
 
-        // Utility: Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById("toast");
             toast.className = "toast show " + type;
@@ -859,7 +857,6 @@
             setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             if (event.target == userModal) {
                 closeUserModal();
