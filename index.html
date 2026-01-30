@@ -646,27 +646,31 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            try {
+                        try {
                 const formData = new FormData();
                 formData.append('action', 'login');
                 formData.append('data', JSON.stringify({ username, password }));
                 
-                const response = await fetch(SCRIPT_URL, {
+                const responseText = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: formData,
-                    redirect: 'follow' // Penting untuk mengatasi redirect Google
-                }).then(res => res.text()); // Ambil sebagai text dulu untuk debugging
+                    redirect: 'follow'
+                }).then(res => res.text()); // Ambil text dulu
 
-                // Debug: Alert isi respon jika user gagal login
-                console.log("Raw Response:", response);
+                console.log("Raw Response:", responseText); // Debug
 
                 let json;
                 try {
-                    json = JSON.parse(response);
+                    json = JSON.parse(responseText);
                 } catch (err) {
-                    console.error("Gagal parse JSON:", err);
-                    alert("DEBUG: Respon Server bukan JSON.\nIsi Respon: " + response.substring(0, 200) + "...");
-                    throw new Error("Format respon salah");
+                    alert("DEBUG: Respon bukan JSON valid.\nIsi: " + responseText);
+                    throw new Error("Format JSON salah");
+                }
+
+                // PENGECEKAN KEAMANAN (Security Check)
+                // Pastikan json.result ada sebelum membaca status
+                if (!json.result) {
+                    throw new Error("Format respon salah: 'result' tidak ditemukan");
                 }
 
                 if (json.result.status === 'success' && json.result.data) {
@@ -675,11 +679,13 @@
                     showToast("Login Berhasil!", "success");
                     showDashboard();
                 } else {
-                    showToast("Username atau Password salah!", "error");
+                    // Jika status error atau data kosong
+                    const errorMsg = json.result.message || "Username atau Password salah!";
+                    showToast(errorMsg, "error");
                 }
 
             } catch (error) {
-                console.error("Fetch Error:", error);
+                console.error("Error Detail:", error);
                 alert("Terjadi kesalahan koneksi: " + error.message);
                 showToast("Terjadi kesalahan koneksi.", "error");
             } finally {
