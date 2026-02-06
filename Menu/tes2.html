@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSB Online - Pondok Pesantren Daruttauhid Al Alawi</title>
+    <!-- Menggunakan Font Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #047857; /* Emerald 700 */
+            --primary-light: #d1fae5; /* Emerald 100 */
+            --secondary: #9f1239; /* Rose 900 - Aksen */
+            --bg-color: #f3f4f6;
+            --surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --focus-ring: rgba(4, 120, 87, 0.4);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Typography khusus */
+        h1, h2, h3, .arabic-text {
+            font-family: 'Amiri', serif;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* --- Main Container --- */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border-top: 4px solid var(--primary);
+        }
+
+        /* --- Progress Bar --- */
+        .progress-container {
+            padding: 1.5rem 2rem;
+            background: var(--primary-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .step.completed {
+            background: var(--primary);
+            content: "✓";
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #cbd5e1;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* --- Form Sections --- */
+        .form-section {
+            display: none; /* Hidden by default */
+            padding: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        /* --- Inputs & Groups --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .col {
+            flex: 1;
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .required {
+            color: var(--secondary);
+        }
+
+        /* --- File Upload Styling --- */
+        .file-upload-wrapper {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: none;
+        }
+
+        /* --- Buttons --- */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #065f46;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f3f4f6;
+            color: var(--text-main);
+        }
+
+        /* --- Summary / Preview --- */
+        .summary-list {
+            list-style: none;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .summary-value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* --- Toast Notification --- */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        
+        #toast.success { background-color: var(--primary); }
+        #toast.error { background-color: var(--secondary); }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        /* --- Success Screen --- */
+        .success-message {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .header-content {
+                padding: 1rem;
+            }
+            .form-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="logo-icon">د</div>
+                <div class="logo-text">
+                    <h1>PSB Daruttauhid</h1>
+                    <p>Pendaftaran Santri Baru TA. 2024/2025</p>
+                </div>
+            </div>
+            <!-- Bisa tambahkan menu hamburger jika perlu -->
+        </div>
+    </header>
+
+    <main>
+        <div class="card">
+            <!-- Progress Indikator -->
+            <div class="progress-container">
+                <div class="steps">
+                    <div class="progress-line"><div class="progress-line-fill" id="progressFill"></div></div>
+                    <div class="step active" id="stepIndicator1">1</div>
+                    <div class="step" id="stepIndicator2">2</div>
+                    <div class="step" id="stepIndicator3">3</div>
+                    <div class="step" id="stepIndicator4">4</div>
+                </div>
+                <div class="step-labels">
+                    <span>Santri</span>
+                    <span>Orang Tua</span>
+                    <span>Berkas</span>
+                    <span>Konfirmasi</span>
+                </div>
+            </div>
+
+            <form id="psbForm" onsubmit="return false;">
+                
+                <!-- BAGIAN 1: Data Santri -->
+                <div class="form-section active" id="section1">
+                    <h2 class="section-title">Data Calon Santri</h2>
+                    
+                    <div class="form-group">
+                        <label for="namaLengkap">Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="namaLengkap" placeholder="Sesuai Ijazah / Akta Kelahiran" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <label for="nik">NIK <span class="required">*</span></label>
+                            <input type="number" id="nik" placeholder="16 Digit NIK" required>
+                        </div>
+                        <div class="col form-group">
+                            <label for="jenisKelamin">Jenis Kelamin <span class="required">*</span></label>
+                            <select id="jenisKelamin" required>
+                                <option value="" disabled selected>Pilih...</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <label for="tempatLahir">Tempat Lahir <span class="required">*</span></label>
+                            <input type="text" id="tempatLahir" required>
+                        </div>
+                        <div class="col form-group">
+                            <label for="tanggalLahir">Tanggal Lahir <span class="required">*</span></label>
+                            <input type="date" id="tanggalLahir" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
+                        <textarea id="alamat" rows="3" placeholder="Nama Jalan, RT/RW, Desa, Kecamatan" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <label for="noHp">No. WhatsApp <span class="required">*</span></label>
+                            <input type="tel" id="noHp" placeholder="Contoh: 08123456789" required>
+                        </div>
+                        <div class="col form-group">
+                            <label for="sekolahAsal">Sekolah Asal <span class="required">*</span></label>
+                            <input type="text" id="sekolahAsal" placeholder="Contoh: MTs Al-Hidayah" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <div></div> <!-- Spacer -->
+                        <button class="btn btn-primary" onclick="nextStep(1)">Lanjut &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- BAGIAN 2: Data Orang Tua -->
+                <div class="form-section" id="section2">
+                    <h2 class="section-title">Data Orang Tua / Wali</h2>
+                    
+                    <div class="form-group">
+                        <label for="namaAyah">Nama Ayah Kandung <span class="required">*</span></label>
+                        <input type="text" id="namaAyah" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pekerjaanAyah">Pekerjaan Ayah</label>
+                        <input type="text" id="pekerjaanAyah">
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px dashed var(--border); margin: 1.5rem 0;">
+
+                    <div class="form-group">
+                        <label for="namaIbu">Nama Ibu Kandung <span class="required">*</span></label>
+                        <input type="text" id="namaIbu" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pekerjaanIbu">Pekerjaan Ibu</label>
+                        <input type="text" id="pekerjaanIbu">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noHpWali">No. WhatsApp Orang Tua <span class="required">*</span></label>
+                        <input type="tel" id="noHpWali" placeholder="Nomor yang bisa dihubungi panitia" required>
+                        <div class="hint">Akan digunakan untuk grup informasi PSB.</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(2)">&larr; Kembali</button>
+                        <button class="btn btn-primary" onclick="nextStep(2)">Lanjut &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- BAGIAN 3: Upload Berkas -->
+                <div class="form-section" id="section3">
+                    <h2 class="section-title">Berkas Persyaratan</h2>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Silakan unggah foto/dokumen berikut. Format yang diperbolehkan: JPG, PNG, atau PDF (Maks. 2MB).</p>
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <label>Pas Foto (3x4) <span class="required">*</span></label>
+                            <div class="file-upload-wrapper" onclick="document.getElementById('fileFoto').click()">
+                                <input type="file" id="fileFoto" accept="image/*" onchange="previewFile(this, 'previewFoto')">
+                                <span id="previewFoto">Klik untuk upload</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <label>Scan Kartu Keluarga <span class="required">*</span></label>
+                            <div class="file-upload-wrapper" onclick="document.getElementById('fileKK').click()">
+                                <input type="file" id="fileKK" accept=".jpg,.jpeg,.png,.pdf" onchange="previewFile(this, 'previewKK')">
+                                <span id="previewKK">Klik untuk upload KK</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Scan Akta Kelahiran</label>
+                        <div class="file-upload-wrapper" onclick="document.getElementById('fileAkta').click()">
+                            <input type="file" id="fileAkta" accept=".jpg,.jpeg,.png,.pdf" onchange="previewFile(this, 'previewAkta')">
+                            <span id="previewAkta">Klik untuk upload Akta</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(3)">&larr; Kembali</button>
+                        <button class="btn btn-primary" onclick="nextStep(3)">Lihat Konfirmasi &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- BAGIAN 4: Review -->
+                <div class="form-section" id="section4">
+                    <h2 class="section-title">Konfirmasi Data</h2>
+                    <p style="margin-bottom: 1.5rem;">Mohon periksa kembali data yang Anda masukkan sebelum melakukan pengiriman.</p>
+
+                    <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.5rem;">Data Diri Santri</h3>
+                    <ul class="summary-list">
+                        <li class="summary-item"><span class="summary-label">Nama Lengkap</span><span class="summary-value" id="sumNama"></span></li>
+                        <li class="summary-item"><span class="summary-label">NIK</span><span class="summary-value" id="sumNik"></span></li>
+                        <li class="summary-item"><span class="summary-label">Jenis Kelamin</span><span class="summary-value" id="sumGender"></span></li>
+                        <li class="summary-item"><span class="summary-label">TTL</span><span class="summary-value" id="sumTTL"></span></li>
+                        <li class="summary-item"><span class="summary-label">Sekolah Asal</span><span class="summary-value" id="sumSekolah"></span></li>
+                    </ul>
+
+                    <h3 style="font-size: 1rem; color: var(--primary); margin: 1.5rem 0 0.5rem;">Data Orang Tua</h3>
+                    <ul class="summary-list">
+                        <li class="summary-item"><span class="summary-label">Ayah</span><span class="summary-value" id="sumAyah"></span></li>
+                        <li class="summary-item"><span class="summary-label">Ibu</span><span class="summary-value" id="sumIbu"></span></li>
+                        <li class="summary-item"><span class="summary-label">No. HP Wali</span><span class="summary-value" id="sumHpWali"></span></li>
+                    </ul>
+
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="agreement" style="margin-top: 4px;">
+                            <span style="font-size: 0.9rem; color: var(--text-main);">
+                                Saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. Saya bersedia mengikuti seluruh aturan PP. Daruttauhid Al Alawi.
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(4)">&larr; Kembali</button>
+                        <button class="btn btn-primary" onclick="submitForm()">Kirim Pendaftaran</button>
+                    </div>
+                </div>
+
+                <!-- SUCCESS SCREEN (Hidden default) -->
+                <div class="form-section" id="successSection">
+                    <div class="success-message">
+                        <div class="success-icon">✓</div>
+                        <h2 class="section-title" style="border:none;">Pendaftaran Berhasil!</h2>
+                        <p style="margin-bottom: 2rem;">Alhamdulillah, data <strong><span id="finalName"></span></strong> telah kami terima.</p>
+                        
+                        <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 2rem; text-align: left;">
+                            <strong>Langkah Selanjutnya:</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.9rem; color: #166534;">
+                                <li>Panitia akan memverifikasi data Anda maksimal 2x24 jam.</li>
+                                <li>Informasi jadwal tes/wawancara akan dikirim via WhatsApp.</li>
+                                <li>Simpan halaman ini atau screenshot bukti pendaftaran.</li>
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="window.print()">Cetak Bukti / Print</button>
+                        <button class="btn btn-secondary" onclick="location.reload()" style="margin-left: 10px;">Daftar Baru</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Pondok Pesantren Daruttauhid Al Alawi. Hak Cipta Dilindungi.</p>
+        <p>Jl. Pesantren No. 123, Kec. Contoh, Kab. Contoh</p>
+    </footer>
+
+    <!-- Toast Notification Element -->
+    <div id="toast">Pesan notifikasi</div>
+
+    <script>
+        // State Management
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Fungsi Menampilkan Toast (Pengganti Alert)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById("toast");
+            toast.className = "show " + type;
+            toast.innerText = message;
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Navigasi Form
+        function showSection(step) {
+            // Sembunyikan semua section
+            document.querySelectorAll('.form-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Tampilkan section yang dipilih
+            if (step === 'success') {
+                document.getElementById('successSection').classList.add('active');
+            } else {
+                document.getElementById('section' + step).classList.add('active');
+            }
+
+            // Update Progress Bar
+            updateProgress(step);
+        }
+
+        function updateProgress(step) {
+            // Update angka step
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById('stepIndicator' + i);
+                if (i < step) {
+                    el.classList.add('completed');
+                    el.classList.remove('active');
+                    el.innerHTML = "✓";
+                } else if (i === step) {
+                    el.classList.add('active');
+                    el.classList.remove('completed');
+                    el.innerHTML = i;
+                } else {
+                    el.classList.remove('active', 'completed');
+                    el.innerHTML = i;
+                }
+            }
+
+            // Update garis progress
+            const percent = ((step - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+        }
+
+        // Validasi & Pindah ke Depan
+        function nextStep(current) {
+            if (validateStep(current)) {
+                if (current < totalSteps) {
+                    currentStep++;
+                    if(current === 3) populateSummary(); // Isi ringkasan data sebelum masuk step 4
+                    showSection(currentStep);
+                }
+            }
+        }
+
+        // Pindah ke Belakang
+        function prevStep(current) {
+            if (current > 1) {
+                currentStep--;
+                showSection(currentStep);
+            }
+        }
+
+        // Logika Validasi Sederhana
+        function validateStep(step) {
+            let valid = true;
+            const currentSection = document.getElementById('section' + step);
+            const inputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = "var(--secondary)";
+                    // Beri fokus ke input kosong pertama
+                    // input.focus(); 
+                } else {
+                    input.style.borderColor = "var(--border)";
+                    
+                    // Validasi NIK (min 16 digit)
+                    if(input.id === 'nik' && input.value.length < 16) {
+                        valid = false;
+                        showToast("NIK harus 16 digit", "error");
+                        input.style.borderColor = "var(--secondary)";
+                    }
+                }
+            });
+
+            if (!valid) {
+                showToast("Mohon lengkapi kolom yang bertanda merah", "error");
+            }
+            
+            return valid;
+        }
+
+        // Simulasi Preview File
+        function previewFile(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const fileName = input.files[0].name;
+                preview.style.display = "block";
+                preview.innerHTML = "✅ File terpilih: " + fileName;
+                preview.style.color = "var(--primary)";
+            } else {
+                preview.style.display = "none";
+            }
+        }
+
+        // Mengisi Data Ringkasan (Step 4)
+        function populateSummary() {
+            document.getElementById('sumNama').innerText = document.getElementById('namaLengkap').value;
+            document.getElementById('sumNik').innerText = document.getElementById('nik').value;
+            document.getElementById('sumGender').innerText = document.getElementById('jenisKelamin').value;
+            
+            const ttl = document.getElementById('tempatLahir').value + ", " + document.getElementById('tanggalLahir').value;
+            document.getElementById('sumTTL').innerText = ttl;
+            
+            document.getElementById('sumSekolah').innerText = document.getElementById('sekolahAsal').value;
+            document.getElementById('sumAyah').innerText = document.getElementById('namaAyah').value;
+            document.getElementById('sumIbu').innerText = document.getElementById('namaIbu').value;
+            document.getElementById('sumHpWali').innerText = document.getElementById('noHpWali').value;
+        }
+
+        // Submit Final
+        function submitForm() {
+            // Cek Checkbox Persetujuan
+            const agreement = document.getElementById('agreement');
+            if (!agreement.checked) {
+                showToast("Anda harus menyetujui pernyataan kebenaran data.", "error");
+                return;
+            }
+
+            // Cek File Upload (Simulasi)
+            const foto = document.getElementById('fileFoto').files[0];
+            const kk = document.getElementById('fileKK').files[0];
+
+            if (!foto || !kk) {
+                showToast("Mohon upload Pas Foto dan Kartu Keluarga.", "error");
+                // Kembali ke step 3 jika file kurang
+                prevStep(4);
+                return;
+            }
+
+            // Simulasi Loading dan Sukses
+            const btn = document.querySelector('#section4 .btn-primary');
+            const originalText = btn.innerText;
+            btn.innerText = "Mengirim...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                // Tampilkan Sukses
+                document.getElementById('finalName').innerText = document.getElementById('namaLengkap').value;
+                
+                // Hide progress bar di success screen
+                document.querySelector('.progress-container').style.display = 'none';
+                
+                showSection('success');
+                showToast("Alhamdulillah, Data berhasil dikirim!");
+            }, 1500);
+        }
+
+        // Event listener untuk membersihkan error style saat mengetik
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                this.style.borderColor = "var(--border)";
+            });
+        });
+
+    </script>
+</body>
+</html>
